@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Displays files in current directory (part after first dash)
+
+for file in *
+do
+  echo "${file#*-}"
+done
