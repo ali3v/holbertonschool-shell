@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Send termination signal to the '4-to_infinity_and_beyond' process
+trap 'echo "I am invincible!!!"' SIGTERM
+while true
+do
+    echo "To infinity and beyond"
+    sleep 2
+done
