@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
-# Send termination signal to the '4-to_infinity_and_beyond' process
-pkill -f '[b]ash ./4-to_infinity_and_beyond'
+# Stops the 4-to_infinity_and_beyond process
+
+pkill -f 4-to_infinity_and_beyond
