@@ -1,11 +1,18 @@
 #!/usr/bin/env bash
 # Creates a PID file and handles signals gracefully
 
-echo "$$" > /var/run/myscript.pid
+pid_file="/var/run/myscript.pid"
 
-trap 'echo "Y U no love me?!"' SIGINT
-trap 'echo "I hate the kill command"; rm -f /var/run/myscript.pid; exit' SIGTERM
-trap 'rm -f /var/run/myscript.pid; exit' SIGQUIT
+# Fallback əgər /var/run icazəsi yoxdursa
+if ! touch "$pid_file" 2>/dev/null; then
+    pid_file="/tmp/myscript.pid"
+fi
+
+echo "$$" > "$pid_file"
+
+trap 'echo "Y U no love me?!";' SIGINT
+trap 'echo "I hate the kill command"; rm -f "$pid_file"; exit' SIGTERM
+trap 'rm -f "$pid_file"; exit' SIGQUIT
 
 while true; do
     echo "To infinity and beyond"
