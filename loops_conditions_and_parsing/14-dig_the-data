@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Groups visitors by IP and HTTP status code
+
+awk '{
+  key = $1 " " $9
+  count[key]++
+}
+END {
+  for (k in count) {
+    printf "%7d %s\n", count[k], k
+  }
+}' apache-access.log | sort -rn
