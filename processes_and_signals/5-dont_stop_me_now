@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# This script is displaying something
+for pid in $(pgrep -f "4-to_infinity_and_beyond"); do
+    kill "$pid"
+done
