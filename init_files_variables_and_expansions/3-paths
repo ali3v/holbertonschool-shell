@@ -1,2 +1,2 @@
-#!/usr/bin/env bash
+#!/bin/bash
 echo "$PATH" | tr ':' '\n' | grep / | wc -l
