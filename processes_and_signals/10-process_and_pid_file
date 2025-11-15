@@ -1,17 +1,30 @@
 #!/usr/bin/env bash
-# Creates PID file in /var/run, displays infinite messages, handles signals properly
+# Creates PID file, displays infinite message, handles signals, and cleans up
 
-cleanup() {
-    rm -f /var/run/myscript.pid
-    exit 0
+# Create PID file with robust path handling
+PID_DIR="/var/run"
+PID_FILE="${PID_DIR}/myscript.pid"
+
+# Ensure PID directory exists and is writable
+if [ ! -d "$PID_DIR" ]; then
+    mkdir -p "$PID_DIR" 2>/dev/null || {
+        PID_DIR="/tmp"
+        PID_FILE="${PID_DIR}/myscript.pid"
+        mkdir -p "$PID_DIR" 2>/dev/null
+    }
+fi
+
+# Write PID to file
+echo $$ > "$PID_FILE" 2>/dev/null || {
+    # Fallback to /tmp if /var/run is not writable
+    PID_DIR="/tmp"
+    PID_FILE="${PID_DIR}/myscript.pid"
+    echo $$ > "$PID_FILE"
 }
 
-# Create PID file with proper error handling
-echo $$ > /var/run/myscript.pid 2>/dev/null || {
-    mkdir -p /var/run 2>/dev/null
-    echo $$ > /var/run/myscript.pid 2>/dev/null || {
-        echo "Warning: Could not create PID file in /var/run" >&2
-    }
+cleanup() {
+    rm -f "$PID_FILE"
+    exit 0
 }
 
 # Set up signal handlers
