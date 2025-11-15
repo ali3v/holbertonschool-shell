@@ -1,31 +1,37 @@
 #!/usr/bin/env bash
-# Manages the manage_my_process daemon (start, stop, restart)
+# Manages the manage_my_process daemon with start, stop, and restart commands
 
-pid_file="/var/run/my_process.pid"
+PID_FILE="/var/run/my_process.pid"
 
 case "$1" in
     start)
-        /bin/bash ./manage_my_process &
-        echo $! > "$pid_file"
+        nohup ./manage_my_process >/dev/null 2>&1 &
+        echo $! > "$PID_FILE"
         echo "manage_my_process started"
         ;;
     stop)
-        if [ -f "$pid_file" ]; then
-            kill "$(cat "$pid_file")" 2>/dev/null
-            rm -f "$pid_file"
+        if [ -f "$PID_FILE" ]; then
+            kill "$(cat "$PID_FILE")" 2>/dev/null
+            rm -f "$PID_FILE"
             echo "manage_my_process stopped"
+        else
+            echo "manage_my_process is not running" >&2
+            exit 1
         fi
         ;;
     restart)
-        if [ -f "$pid_file" ]; then
-            kill "$(cat "$pid_file")" 2>/dev/null
-            rm -f "$pid_file"
+        if [ -f "$PID_FILE" ]; then
+            kill "$(cat "$PID_FILE")" 2>/dev/null
+            rm -f "$PID_FILE"
         fi
-        /bin/bash ./manage_my_process &
-        echo $! > "$pid_file"
+        nohup ./manage_my_process >/dev/null 2>&1 &
+        echo $! > "$PID_FILE"
         echo "manage_my_process restarted"
         ;;
     *)
         echo "Usage: manage_my_process {start|stop|restart}"
+        exit 1
         ;;
 esac
+
+exit 0
