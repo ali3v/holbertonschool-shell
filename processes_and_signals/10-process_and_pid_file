@@ -1,20 +1,17 @@
 #!/usr/bin/env bash
-# Creates a PID file and handles signals gracefully
+# Creates PID file, displays infinite message, handles signals, and cleans up on termination
 
-pid_file="/var/run/myscript.pid"
+echo $$ > /var/run/myscript.pid
 
-# Fallback əgər /var/run icazəsi yoxdursa
-if ! touch "$pid_file" 2>/dev/null; then
-    pid_file="/tmp/myscript.pid"
-fi
+cleanup() {
+    rm -f /var/run/myscript.pid
+}
 
-echo "$$" > "$pid_file"
-
-trap 'echo "Y U no love me?!";' SIGINT
-trap 'echo "I hate the kill command"; rm -f "$pid_file"; exit' SIGTERM
-trap 'rm -f "$pid_file"; exit' SIGQUIT
+trap 'echo "I hate the kill command"; cleanup; exit 0' TERM
+trap 'echo "Y U no love me?!"' INT
+trap 'cleanup; exit 0' QUIT
 
 while true; do
     echo "To infinity and beyond"
-    sleep 2
+    sleep 1
 done
