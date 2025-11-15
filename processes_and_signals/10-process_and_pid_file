@@ -1,16 +1,25 @@
 #!/usr/bin/env bash
-# Creates PID file, displays infinite message, handles signals, and cleans up on termination
-
-echo $$ > /var/run/myscript.pid
+# Creates PID file in /var/run, displays infinite messages, handles signals properly
 
 cleanup() {
     rm -f /var/run/myscript.pid
+    exit 0
 }
 
-trap 'echo "I hate the kill command"; cleanup; exit 0' TERM
-trap 'echo "Y U no love me?!"' INT
-trap 'cleanup; exit 0' QUIT
+# Create PID file with proper error handling
+echo $$ > /var/run/myscript.pid 2>/dev/null || {
+    mkdir -p /var/run 2>/dev/null
+    echo $$ > /var/run/myscript.pid 2>/dev/null || {
+        echo "Warning: Could not create PID file in /var/run" >&2
+    }
+}
 
+# Set up signal handlers
+trap 'echo "I hate the kill command"; cleanup' TERM
+trap 'echo "Y U no love me?!"' INT
+trap 'cleanup' QUIT
+
+# Main loop
 while true; do
     echo "To infinity and beyond"
     sleep 1
